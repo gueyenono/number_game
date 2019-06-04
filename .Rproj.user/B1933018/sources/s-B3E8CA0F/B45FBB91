@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1559596518198.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2903978916",
+    "id" : "B45FBB91",
+    "lastKnownWriteTime" : 1559596536,
+    "last_content_update" : 1559596536539,
+    "path" : "F:/Research/demand_consumer_surplus_app/training_stage/modularize_rhandsontable/number_game/R/helper_functions.R",
+    "project_path" : "R/helper_functions.R",
+    "properties" : {
+        "cursorPosition" : "62,0",
+        "scrollLine" : "34",
+        "tempName" : "Untitled2"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

@@ -1,0 +1,95 @@
+# This is a number game.
+# At launch, a grid of hidden values is generated.
+# The user needs to find all the values in a limited number of attempts.
+
+library(shiny)
+library(rhandsontable)
+library(magrittr)
+source("R/helper_functions.R")
+
+ui <- fluidPage(
+
+    titlePanel("The number game"),
+
+    sidebarLayout(
+        sidebarPanel(
+        	numericInput(inputId = "grid_dim", label = "Grid dimension", value = 2, min = 2, max = 5, step = 1),
+        	actionButton(inputId = "make_grid", label = "Generate values")
+        ),
+
+        mainPanel(
+           h1("Find the hidden numbers"),
+           rHandsontableOutput(outputId = "grid"),
+           actionButton(inputId = "validate", label = "Check values"),
+           fluidRow(
+             # column(6, tableOutput(outputId = "initial_values")),
+             column(6, tableOutput(outputId = "correct_values"))
+           )
+           
+        )
+    )
+)
+
+server <- function(input, output) {
+  
+  grid <- reactiveValues(
+    values = NULL,
+    input = NULL,
+    display = NULL
+  )
+  
+  # Make grid of values when the appropriate button is clicked
+  
+  observeEvent(input$make_grid, {
+    req(input$grid_dim)
+    grid$display <- rhandsontable(generate_grid(dim = input$grid_dim, na = TRUE))
+    grid$values <- generate_grid(dim = input$grid_dim, na = FALSE)
+  })
+  
+  # When the "Check values" button is clicked
+  # .. compare the generated grid values to the user inputs
+  
+  observeEvent(input$validate, {
+    grid$input <- hot_to_r(input$grid)
+    
+    index_na <- get_na_index(x = grid$input)
+    index_correct <- get_index(x = grid$values, y = grid$input, equal.cells = TRUE)
+    index_incorrect <- get_index(x = grid$values, y = grid$input, equal.cells = FALSE)
+    
+    grid$display <-
+      grid$input %>%
+      rhandsontable(row_correct = index_correct$row_index, col_correct = index_correct$col_index) %>%
+      hot_cols(renderer = "function(instance, td, row, col, prop, value, cellProperties) {
+          Handsontable.renderers.TextRenderer.apply(this, arguments);
+          
+          if(instance.params){
+            hrows = instance.params.row_correct
+            hrows = hrows instanceof Array ? hrows : [hrows]
+            hcols = instance.params.col_correct
+            hcols = hcols instanceof Array ? hcols : [hcols]
+            
+            for (i = 0; i < hcols.length; i++) { 
+              if (hcols[i] == col && hrows[i] == row) {
+                  td.style.background = 'green';
+              }
+            }
+          }
+          return td;
+        }")
+  })
+  
+  # Display grid
+  
+  output$grid <- renderRHandsontable({
+    req(grid$display)
+  	grid$display
+  })
+  
+  output$correct_values <- renderTable({
+    req(grid$values)
+    grid$values
+  })
+}
+
+# Run the application 
+shinyApp(ui = ui, server = server)

@@ -1,0 +1,7 @@
+library(finreportr)
+
+# Google's balance sheet in 2017
+bl_goog_17 <- GetBalanceSheet(symbol = "goog", year = 2017)
+
+# Google's income statement in 2017
+is_goog_17 <- GetIncome(symbol = "goog", year = 2017)
